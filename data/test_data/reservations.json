@@ -1,0 +1,10 @@
+{
+  "2e72f86c-b8fe-4265-b4f1-304dea8762db" : [ {
+    "id" : 11,
+    "startDate" : [ 2023, 12, 5 ],
+    "endDate" : null,
+    "hostId" : "2e72f86c-b8fe-4265-b4f1-304dea8762db",
+    "guestId" : 735,
+    "total" : 1100.0
+  } ]
+}

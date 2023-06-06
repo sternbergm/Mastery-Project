@@ -1,0 +1,18 @@
+{
+  "2e72f86c-b8fe-4265-b4f1-304dea8762db" : [ {
+    "id" : 1,
+    "startDate" : [ 2023, 12, 20 ],
+    "endDate" : [ 2023, 12, 24 ],
+    "hostId" : "2e72f86c-b8fe-4265-b4f1-304dea8762db",
+    "guestId" : 735,
+    "total" : 850.0
+  } ],
+  "664ba16a-16b3-444a-a10b-2cea17d63223" : [ {
+    "id" : 1,
+    "startDate" : [ 2023, 5, 1 ],
+    "endDate" : [ 2023, 5, 30 ],
+    "hostId" : "664ba16a-16b3-444a-a10b-2cea17d63223",
+    "guestId" : 143,
+    "total" : 9500.0
+  } ]
+}

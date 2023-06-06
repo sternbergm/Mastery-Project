@@ -1,0 +1,272 @@
+>learn.reservations
+    >dal
+        +Repository<T>
+            +readAll() : List<T> throws DALException
+            +Create(T t) : T throws DALException
+            +update(T t) : void throws DALException
+            +delete(T t) : void throws DALException
+        +PersonRepository<T> -> Repository<T>
+            -String fileName
+            -ObjectMapper mapper
+            -String header
+            +writeAll(List<T> t) : void throws DALException
+            +abstract getId(T t, List<T> ts) : void
+        +GuestRepository -> PersonRepository<Guest>
+            -ObjectMapper<Guest> mapper;
+            +GuestRepository(String fileName, ObjectMapper<Guest> mapper, String header)
+        +HostRepository -> PersonRepository<Host>
+            -ObjectMapper<Guest> mapper
+            +HostMapper(String fileName, ObjectMapper<Host> mapper, String header)
+        +ReservationRepository
+            +ReadByHostId(int hostId) : List<Reservation> throws DALException
+            +Create(int hostId, Reservation reservation) : Reservation Throws DALException
+            +Update(int hostId, int id, Reservation reservation) : void throws DALException
+            +Delete(int hostId, int id) : void throws DALException
+        +ReservationRepositoryImpl -> Reservation Repository
+            -List<Reservation> reservations
+            -String directory
+            -ObjectMapper<Reservation> mapper
+            +ReservationRepositoryImpl(String directory)
+            +WriteAll(int hostId, List<Reservation> reservations) throws DALException
+        +ReservationJSONRepository -> Reservation Repository
+            -String fileName
+            -ObjectMapper mapper
+            -readAll() : map<String, List<Reservation>> throws DALException
+            -writeHostId(String hostId, List<Reservation> reservations) throws DALException
+            -writeAll(Map<String, List<Reservations>>) : void throws DALException;
+        +ObjectMapper<T>
+            +Serialize(T t) : String
+            +Deserialize(String) : T
+        +GuestMapper : ObjectMapper<Guest>
+        +HostMapper : ObjectMapper<Host>
+        +ReservationMapper : ObjectMapper<Reservation>
+        +DALException -> Exception
+    >domains
+        +PersonService<Obj>
+            +FindByEmail(String email) : Obj throws DALException
+            +FindByLastNamePrefix(String prefix) : Obj throws DALException
+            +getAll() : List<Obj> throws DALException
+            +FindByState(String state) : List<Obj>
+            +FindByAddress(String address) : List<Obj>
+            +FindByCity(String city) : List<Obj>
+            +Create(Obj obj) : Result<Obj>
+            +Update(Obj obj) : Result<Obj>
+            +Delete(Obj obj) : void
+            +ValidateFields(Result<Obj> result, Obj obj) : void
+            +validateDuplicates(Result<Obj> result, Obj ojb) : void
+        +GuestService -> PersonService<Guest>
+        +HostService -> PersonService<Host>
+        +ReservationService
+            +GetReservationsByHost(String hostId) : List<Reservations> throws DALException
+            +getReservationsByGuest(int guestId) : List<Reservations> throws DALException
+            +MakeReservation(String hostId, Reservation reservation) : Result<Reservation> throws DALException
+            +UpdateReservation(String hostId, int id, Reservation reservation) : Result<Reservation> throwsDALException
+            +DeleteReservation(String hostId, int id) : void throws DALException
+            +DeleteReservationsByHost(String hostId) : void throws DALException
+            +deleteReservationsByGuest(int guestId) : void throws DALException
+        +ReservationServiceImpl -> ReservationService
+            -ReservationRepository repository
+            -GuestRepository guestRepository
+            -HostRepository hostRepository
+            +reservationServiceImpl(ReservationRepository repository)
+            +ValidateChildrenExist(Result result, Reservation reservation)
+            +ValidateFields(Result result, Reservation reservation)
+            +ValidateReservationDates(Result result, Reservation reservation, List<Reservations> reservations);
+        +Result<Obj>
+            -List<String> messages
+            -Obj obj
+            +AddMessage(String message) : void
+            +getMessages() : List<String>
+            +isSuccessful() : boolean
+            +addPayload(Obj obj); void
+            +getPayload: Obj obj
+    >models
+        +Person
+            -last_name : String
+            -email : String
+            -phone : String
+            -state : String
+        +Host -> Person
+            -id : String
+            -address : String
+            -city : String
+            -postal_code : int
+            -standard_rate : BigDecimal
+            -weekend_rate : BigDecimal
+            +Equals
+            +Hashcode
+            +toString
+        +Guest -> Person
+            -id : int
+            -first_name : String
+            +Equals
+            +Hashcode
+            +toString
+        +Reservation
+            -id : int
+            -startDate : LocalDate
+            -endDate : LocalDate
+            -hostId : String
+            -guestId : String
+            -total : BigDecimal
+            +Equals
+            +Hashcode
+            +toString
+            +CalculateTotal
+    >io
+        +TextIO
+            +print(String message) : void
+            +println(String message) : void
+            +readString(String prompt) : String
+            +readRequiredString(String prompt) : String
+            +readInt(String prompt, int min, int max) : int
+            +readBoolean(string prompt) : boolean
+            +readLocalDate(String prompt) : LocalDate
+            +readPrice(String prompt) : BigDecimal
+            +updateRequiredString(String prompt, String oldValue) : String
+            +updateInt(String prompt, int min, int max, int oldValue) : int
+            +updateLocalDate(String prompt, LocalDate oldValue) : LocalDate
+            +readPrice(String prompt,BigDecimal oldValue) : BigDecimal
+        +ConsoleIO -> TextIO
+            -String INVALID_NUMBER
+            -String NUMBER_OUT_OF_RANGE
+            -String REQUIRED
+            -String INVALID_DATE
+            -Scanner scanner
+            -DateTimeFormatter formatter
+        +View
+            -ConsoleIO io
+            +SelectMenuOption() : MenuOption
+            +SelectViewMenuOption() : ViewMenu
+            +SelectReservationMenuOption() : ReservationMenu
+            +SelectHostMenuOption() : HostMenu
+            +SelectGuestMenuOption() : GuestMenu
+            +displayHeader() : void
+            +displayException(DALException ex) : void
+            +getEmail() : String
+            +displayReservations(List<Reservation> reservations, List<Guest> guests) : void
+            +displayReservationsByHost(List<Reservation> reservations, List<Host> hosts) : void
+            +displayReservationsByHostWithGuests(List<Reservation> reservations, List<Host> hosts, List<Guest> guests) : void
+            +displayMessage(String s) : void
+            +enterToContinue() : void
+            +makeReservation(Host host, Guest guest, List<Reservation> reservations) : Reservation
+            +updateReservation(Reservation reservation, List<Reservation> reservations, Host host) : Reservation
+            +makeHost() : Host
+            +updateHost(Host host) : host
+            +makeGuest() : Guest
+            +updateGuest(Guest guest) : Guest
+            +getDate(LocalDate
+            +displayStatus(boolean success, List<String> messages) : void
+            +chooseHost(List<Host> hosts) : Host
+            +chooseGuest(List<Guest> guests) : Guest
+            +chooseReservation(List<Reservation> reservation) : Reservation
+            +chooseDates(LocalDate lowerBound, Map<Integer, List<LocalDate>>) : LocalDate
+            +MakeYesNoDecision(String prompt) : boolean
+
+        +Controller
+            -View view
+            -ViewController viewController
+            -ReservationController reservationController
+            -HostController hostController
+            -GuestController guestController
+            +Controller(ViewController viewController,
+                        ReservationController reservationController,
+                        HostController hostController,
+                        GuestController guestController,
+                        View view)
+            +run() : void
+            +runLoop() : void throws DALException
+        >controllers
+            +ViewController
+                -View view
+                -ReservationService reservationService
+                -HostService hostService
+                -GuestService guestService
+                +runViewMenu() : void
+                +viewByHost() : void
+                +viewByGuest() : void
+                +viewByState() : void
+                +viewByCity() : void
+                +viewByAddress() : void
+            +ReservationController
+                -View view
+                -ReservationService reservationService
+                -HostService hostService
+                -GuestService guestService
+                +runReservationMenu() : void
+                +addReservation() : void
+                +updateReservation() : void
+                +cancelReservation() : void
+                +HandleResult() : void
+            +HostController
+                -View view
+                -ReservationService reservationService
+                -HostService hostService
+                +runHostMenu() : void
+                +viewHostsByLastName() : void
+                +addHost() : void
+                +updateHost() : void
+                +deleteHost() : void
+                +HandleHostResult() : void
+            +GuestController
+                -View view
+                -ReservationService reservationService
+                -GuestService guestService
+                +runGuestMenu() : void
+                +viewGuestsByLastName() : void
+                +addGuest() : void;
+                +updateGuest() : void
+                +deleteGuest() : void
+                +HandleGuestResult() : void
+            +ControllerHelper
+                +getFutureReservation(List<Reservation> reservations)
+                +getHost() : Host
+                +getGuest() : Guest
+                +validateReservations(List<Reservation> reservations)
+        >Menus
+            +MenuOption
+                -EXIT
+                -VIEW_INFORMATION
+                -DO_RESERVATION
+                -DO_HOST
+                -DO_GUEST
+                +fromValue(int value) : MenuOption
+                +getValue() : int
+                +getMessage() : String
+            +ViewMenu
+                -EXIT
+                -VIEW_RESERVATIONS_BY_HOST
+                -VIEW_RESERVATIONS_BY_GUEST
+                -VIEW_RESERVATIONS_BY_STATE
+                -VIEW_RESERVATIONS_BY_CITY
+                -VIEW_RESERVATIONS_BY_ADDRESS
+                +fromValue(int value) : ViewMenu
+                +getValue() : int
+                +getMessage() : String
+            +ReservationMenu
+                -EXIT
+                -ADD_RESERVATION
+                -UPDATE_RESERVATION
+                -DELETE_RESERVATION
+                +fromValue(int value) : ReservationMenu
+                +getValue() : int
+                +getMessage() : String
+            +HostMenu
+                -EXIT
+                -VIEW_HOSTS
+                -ADD_HOST
+                -UPDATE_HOST
+                -DELETE_HOST
+                +fromValue(int value) : HostMenu
+                +getValue() : int
+                +getMessage() : String
+            +GuestMenu
+                -EXIT
+                -VIEW_GUESTS
+                -ADD_GUEST
+                -UPDATE_GUEST
+                -DELETE_GUEST
+                +fromValue(int value) : GuestMenu
+                +getValue() : int
+                +getMessage() : String
+    App
